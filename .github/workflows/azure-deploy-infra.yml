@@ -57,15 +57,9 @@ jobs:
             echo "Error: Cosmos DB connection string is empty!"
             exit 1
           fi
-          echo "cosmos_db_connection_string=$cosmos_cs"  >> $GITHUB_ENV
+          echo "::add-mask::$cosmos_cs"  # Mask sensitive output in logs
+          echo "COSMOS_DB_CONNECTION_STRING=$cosmos_cs" >> $GITHUB_ENV  # Set as environment variable
           
-      - name: Expose sensitive outputs
-        id: expose_secret
-        uses: cloudposse/github-action-secret-outputs@main
-        with:
-          outputs: cosmos_db_connection_string
-          
-
   ImportDataToMongo:
     name: Import Data
     needs: DeployInfra
@@ -78,8 +72,7 @@ jobs:
           sudo apt update
           sudo apt install -y mongodb-org-tools
 
-      # Import data using mongoimport
       - name: Import data into MongoDB
         run: |
-          echo "${{ steps.expose_secret.outputs.cosmos_db_connection_string }}"
-          mongoimport --uri="${{ steps.expose_secret.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
+          echo "Using Cosmos DB connection string: $COSMOS_DB_CONNECTION_STRING"
+          mongoimport --uri="$COSMOS_DB_CONNECTION_STRING" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
