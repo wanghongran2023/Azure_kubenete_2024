@@ -68,7 +68,7 @@ resource "azurerm_cosmosdb_mongo_collection" "collection1" {
   database_name       = azurerm_cosmosdb_mongo_database.cosmos_db.name
   shard_key           = "shardKey"
   throughput          = 400
-  indexes {
+  index {
     keys = ["shardKey"]
   }
 }
@@ -80,8 +80,8 @@ resource "azurerm_cosmosdb_mongo_collection" "collection2" {
   database_name       = azurerm_cosmosdb_mongo_database.cosmos_db.name
   shard_key           = "shardKey"
   throughput          = 400
-  indexes {
-    keys = ["shardKey"]
+  index {
+    keys = ["_id"]
   }
 }
 
@@ -95,9 +95,6 @@ resource "azurerm_function_app" "function" {
   os_type             = "Linux"
 
   site_config {
-    application_stack {
-      python_version = "3.9"
-    }
   }
 
   identity {
