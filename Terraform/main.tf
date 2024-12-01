@@ -92,7 +92,7 @@ resource "azurerm_function_app" "function" {
   app_service_plan_id = azurerm_service_plan.service_plan.id
   storage_account_name       = azurerm_storage_account.storage_account.name
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
-  os_type             = "Linux"
+  os_type             = "linux"
 
   site_config {
   }
