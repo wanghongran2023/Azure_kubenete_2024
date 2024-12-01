@@ -61,6 +61,7 @@ jobs:
             exit 1
           fi
           echo "mongoimport --uri=\"$cosmos_cs\" --db=\"${{ secrets.COSMOS_NAME }}\" --collection=\"${{ secrets.COSMOS_COLLECTION1_NAME }}\" --file=./sample_data/sampleAds.json --jsonArray" > ../cosmos_db_data_import.sh
+          echo "mongoimport --uri=\"$cosmos_cs\" --db=\"${{ secrets.COSMOS_NAME }}\" --collection=\"${{ secrets.COSMOS_COLLECTION2_NAME }}\" --file=./sample_data/samplePosts.json --jsonArray" >> ../cosmos_db_data_import.sh
           echo "$cosmos_cs" > ../cosmos_db_connection_string.txt
 
       - name: Upload Cosmos DB Data Import Script as artifact
