@@ -108,12 +108,12 @@ resource "azurerm_linux_function_app" "function" {
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
-    MONGODB_CONNECTION_STRING = azurerm_cosmosdb_account.cosmos_account.primary_connection_string
+    MONGODB_CONNECTION_STRING = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
   }
 }
 
 output "cosmos_db_connection_string" {
-  value       = azurerm_cosmosdb_account.cosmos_account.primary_connection_string
+  value       = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
   description = "The connection string for Cosmos DB"
   sensitive   = true
 }
