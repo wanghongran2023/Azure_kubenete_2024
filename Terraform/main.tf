@@ -115,6 +115,6 @@ resource "azurerm_linux_function_app" "function" {
 output "cosmos_db_connection_string" {
   value       = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
   description = "The connection string for Cosmos DB"
-  sensitive   = true
+  sensitive   = false
 }
 
