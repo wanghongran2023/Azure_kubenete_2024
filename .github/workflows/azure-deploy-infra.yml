@@ -88,4 +88,5 @@ jobs:
       # Import data using mongoimport
       - name: Import data into MongoDB
         run: |
-          mongoimport --uri="${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
+          echo "${{ needs.apply_terraform.outputs.cosmos_db_connection_string }}"
+          mongoimport --uri="${{ needs.apply_terraform.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
