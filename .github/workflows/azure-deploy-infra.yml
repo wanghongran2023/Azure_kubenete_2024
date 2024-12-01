@@ -2,6 +2,9 @@ name: Infra Construction
 
 on:
   workflow_dispatch:
+  
+permissions:
+  id-token: write
 
 jobs:
   DeployInfra:
@@ -180,7 +183,6 @@ jobs:
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.SP_CLIENT_ID }}
-          client-secret: ${{ secrets.SP_CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
           
