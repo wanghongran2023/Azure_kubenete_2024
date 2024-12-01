@@ -66,9 +66,9 @@ jobs:
 
           # Optionally encode the connection string if needed (skip if not required)
           encoded_cosmos_cs=$(echo "$cosmos_cs" | jq -sRr @uri)
-
+          echo "::set-output name=cosmos_db_connection_string::$cosmos_cs"
           # Set the Cosmos DB connection string as an environment variable for the next job
-          echo "cosmos_db_connection_string=$encoded_cosmos_cs" >> $GITHUB_ENV
+          # echo "cosmos_db_connection_string=$encoded_cosmos_cs" >> $GITHUB_ENV
           
     outputs:
       cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
