@@ -182,6 +182,7 @@ jobs:
           client-id: ${{ secrets.SP_CLIENT_ID }}
           client-secret: ${{ secrets.SP_CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
           
       - name: Azure CLI script
         uses: azure/cli@v2
