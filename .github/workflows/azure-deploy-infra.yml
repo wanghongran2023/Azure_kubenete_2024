@@ -58,6 +58,8 @@ jobs:
             exit 1
           fi
           echo "${cosmos_cs}" | gh secret set COSMOS_DB_CONNECTION_STRING --repo $GITHUB_REPOSITORY
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
   ImportDataToMongo:
     name: Import Data
