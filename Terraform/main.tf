@@ -87,16 +87,19 @@ resource "azurerm_cosmosdb_mongo_collection" "collection2" {
   }
 }
 
-resource "azurerm_function_app" "function" {
+resource "azurerm_linux_function_app" "function" {
   name                = var.function_config.name
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
   app_service_plan_id = azurerm_service_plan.service_plan.id
-  storage_account_name       = azurerm_storage_account.storage_account.name
+  storage_account_name = azurerm_storage_account.storage_account.name
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
   os_type             = "linux"
 
   site_config {
+    application_stack {
+      python_version = "3.9"
+    }
   }
 
   identity {
@@ -105,11 +108,13 @@ resource "azurerm_function_app" "function" {
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
-    MONGODB_CONNECTION_STRING = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
+    MONGODB_CONNECTION_STRING = azurerm_cosmosdb_account.cosmos_account.primary_connection_string
   }
 }
 
 output "cosmos_db_connection_string" {
-  value = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
+  value       = azurerm_cosmosdb_account.cosmos_account.primary_connection_string
   description = "The connection string for Cosmos DB"
+  sensitive   = true
 }
+
