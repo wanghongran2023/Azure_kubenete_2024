@@ -81,5 +81,5 @@ jobs:
       # Import data using mongoimport
       - name: Import data into MongoDB
         run: |
-          echo "${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}"
+          echo "${{ steps.expose_secret.outputs.cosmos_db_connection_string }}"
           mongoimport --uri="${{ steps.expose_secret.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
