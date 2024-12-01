@@ -57,7 +57,7 @@ jobs:
             echo "Error: Cosmos DB connection string is empty!"
             exit 1
           fi
-          echo "mongoimport --uri=\"$cosmos_cs\" --db=\"${{ secrets.COSMOS_DB_NAME }}\" --collection=\"${{ secrets.COSMOS_COLLECTION1_NAME }}\" --file=./sample_data/sampleAds.json --jsonArray" > ../cosmos_db_connection_string.sh
+          echo "mongoimport --uri=\"$cosmos_cs\" --db=\"${{ secrets.COSMOS_NAME }}\" --collection=\"${{ secrets.COSMOS_COLLECTION1_NAME }}\" --file=./sample_data/sampleAds.json --jsonArray" > ../cosmos_db_connection_string.sh
 
       - name: Upload Cosmos DB connection string as artifact
         uses: actions/upload-artifact@v3
