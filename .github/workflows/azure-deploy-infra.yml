@@ -7,8 +7,6 @@ jobs:
   DeployInfra:
     name: Deploy Infra
     runs-on: ubuntu-latest
-    outputs:
-      cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
     permissions: write-all
     steps:
       - name: Code Checkout
@@ -49,23 +47,23 @@ jobs:
            sed -i "s|{tmp_cosmos_collection2_name}|${{ secrets.COSMOS_COLLECTION2_NAME }}|g" variables.tfvars
 
       - name: Start Terraform Deploy
-        id: apply_terraform
         working-directory: Terraform
         run: |
           terraform init
           terraform plan -var-file=variables.tfvars
           terraform apply -auto-approve -var-file=variables.tfvars
-          
-          # Extract the raw Cosmos DB connection string
-          #cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
-          cosmos_cs=$(terraform state show azurerm_cosmosdb_account.cosmos_account | grep primary_connection_string | awk -F '=' '{print $2}' | xargs)
-          
+          cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
           if [ -z "$cosmos_cs" ]; then
             echo "Error: Cosmos DB connection string is empty!"
             exit 1
           fi
+          echo "cosmos_db_connection_string=$cosmos_cs"  >> $GITHUB_ENV
           
-          echo "cosmos_db_connection_string=$cosmos_cs" >> "$GITHUB_OUTPUT"
+      - name: Expose sensitive outputs
+        id: expose_secret
+        uses: cloudposse/github-action-secret-outputs@main
+        with:
+          outputs: cosmos_db_connection_string
           
 
   ImportDataToMongo:
@@ -84,4 +82,4 @@ jobs:
       - name: Import data into MongoDB
         run: |
           echo "${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}"
-          mongoimport --uri="${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
+          mongoimport --uri="${{ steps.expose_secret.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
