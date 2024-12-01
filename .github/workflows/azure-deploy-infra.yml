@@ -54,13 +54,13 @@ jobs:
           terraform init
           terraform plan -var-file=variables.tfvars
           terraform apply -auto-approve -var-file=variables.tfvars
-          terraform output -json cosmos_db_connection_string
-          cosmos_cs=$(terraform output -json cosmos_db_connection_string)
+          cosmos_cs=$(terraform output -json cosmos_db_connection_string | jq -r '.value')
           if [ -z "$cosmos_cs" ]; then
             echo "Error: Cosmos DB connection string is empty!"
             exit 1
           fi
-          echo "cosmos_db_connection_string=$cosmos_cs" >> $GITHUB_ENV
+          encoded_cosmos_cs=$(echo "$cosmos_cs" | jq -sRr @uri)
+          echo "cosmos_db_connection_string=$encoded_cosmos_cs" >> $GITHUB_ENV
           
     outputs:
         cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
