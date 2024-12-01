@@ -158,15 +158,21 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          zip release.zip ./* -r
+     #     zip release.zip ./* -r
 
+     # - name: Upload artifact for deployment job
+     #   uses: actions/upload-artifact@v4
+     #   with:
+     #     name: python-app
+     #     path: |
+     #       ./NeighborlyAPI/release.zip
+     #       !venv/
+            
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            ./NeighborlyAPI/release.zip
-            !venv/
+          path: NeighborlyAPI/
 
   DeployFunctionApp:
     runs-on: ubuntu-latest
@@ -177,8 +183,8 @@ jobs:
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip     
+     # - name: Unzip artifact for deployment
+     #   run: unzip release.zip     
 
       - name: Log in to Azure
         uses: azure/login@v1
@@ -201,4 +207,5 @@ jobs:
         with:
           app-name: ${{ secrets.FUNCTION_NAME }}
           slot-name: 'Production'
-          package: '.'
+       #   package: '.'
+          package: './NeighborlyAPI'
