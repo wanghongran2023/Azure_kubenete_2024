@@ -64,11 +64,7 @@ jobs:
             exit 1
           fi
 
-          # Optionally encode the connection string if needed (skip if not required)
-          encoded_cosmos_cs=$(echo "$cosmos_cs" | jq -sRr @uri)
           echo "::set-output name=cosmos_db_connection_string::$cosmos_cs"
-          # Set the Cosmos DB connection string as an environment variable for the next job
-          # echo "cosmos_db_connection_string=$encoded_cosmos_cs" >> $GITHUB_ENV
           
     outputs:
       cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
@@ -88,5 +84,5 @@ jobs:
       # Import data using mongoimport
       - name: Import data into MongoDB
         run: |
-          echo "${{ needs.apply_terraform.outputs.cosmos_db_connection_string }}"
-          mongoimport --uri="${{ needs.apply_terraform.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
+          echo "${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}"
+          mongoimport --uri="${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
