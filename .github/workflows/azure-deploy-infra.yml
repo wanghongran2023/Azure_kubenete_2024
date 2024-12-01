@@ -6,7 +6,6 @@ on:
 jobs:
   DeployInfra:
     name: Deploy Infra
-    if: false
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
