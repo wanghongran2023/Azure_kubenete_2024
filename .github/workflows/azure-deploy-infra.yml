@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  DeployInfraAndBuild:
-    name: Deploy Infra and Build
+  DeployInfra:
+    name: Deploy Infra
     runs-on: ubuntu-latest
     steps:
       - name: Code Checkout
@@ -45,9 +45,28 @@ jobs:
            sed -i "s|{tmp_cosmos_collection2_name}|${{ secrets.COSMOS_COLLECTION2_NAME }}|g" variables.tfvars
 
       - name: Start Terraform Deploy
+        id: apply_terraform
         working-directory: Terraform
         run: |
           terraform init
           terraform plan -var-file=variables.tfvars
           terraform apply -auto-approve -var-file=variables.tfvars
+          cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
+          echo "cosmos_connection_string=$cosmos_cs" >> $GITHUB_OUTPUT
+
+  ImportDataToMongo:
+    name: Import Data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install MongoDB tools
+        run: |
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo tee /etc/apt/trusted.gpg.d/mongodb.asc
+          echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt update
+          sudo apt install -y mongodb-org-tools
+
+      # Import data using mongoimport
+      - name: Import data into MongoDB
+        run: |
+          mongoimport --uri=${{ steps.apply_terraform.outputs.cosmos_connection_string }} --db=${{ secrets.COSMOS_DB_NAME }} --collection=${{ secrets.COSMOS_COLLECTION1_NAME }} --file=./sample_data/sampleAds.json --jsonArray
 

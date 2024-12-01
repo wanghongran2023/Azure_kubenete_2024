@@ -69,7 +69,8 @@ resource "azurerm_cosmosdb_mongo_collection" "collection1" {
   shard_key           = "shardKey"
   throughput          = 400
   index {
-    keys = ["shardKey"]
+    keys    = ["_id"]
+    unique  = true
   }
 }
 
@@ -82,6 +83,7 @@ resource "azurerm_cosmosdb_mongo_collection" "collection2" {
   throughput          = 400
   index {
     keys = ["_id"]
+    unique  = true
   }
 }
 
@@ -105,4 +107,9 @@ resource "azurerm_function_app" "function" {
     FUNCTIONS_WORKER_RUNTIME = "python"
     MONGODB_CONNECTION_STRING = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
   }
+}
+
+output "cosmos_db_connection_string" {
+  value = azurerm_cosmosdb_account.cosmos_account.connection_strings[0]
+  description = "The connection string for Cosmos DB"
 }
