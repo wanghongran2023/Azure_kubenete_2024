@@ -55,16 +55,23 @@ jobs:
           terraform init
           terraform plan -var-file=variables.tfvars
           terraform apply -auto-approve -var-file=variables.tfvars
-          cosmos_cs=$(terraform output -json cosmos_db_connection_string | jq -r '.value')
+          
+          # Extract the raw Cosmos DB connection string
+          cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
+          
           if [ -z "$cosmos_cs" ]; then
             echo "Error: Cosmos DB connection string is empty!"
             exit 1
           fi
+
+          # Optionally encode the connection string if needed (skip if not required)
           encoded_cosmos_cs=$(echo "$cosmos_cs" | jq -sRr @uri)
+
+          # Set the Cosmos DB connection string as an environment variable for the next job
           echo "cosmos_db_connection_string=$encoded_cosmos_cs" >> $GITHUB_ENV
           
     outputs:
-        cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
+      cosmos_db_connection_string: ${{ steps.apply_terraform.outputs.cosmos_db_connection_string }}
 
   ImportDataToMongo:
     name: Import Data
@@ -81,5 +88,4 @@ jobs:
       # Import data using mongoimport
       - name: Import data into MongoDB
         run: |
-          mongoimport --uri=${{ needs.apply_terraform.outputs.cosmos_db_connection_string }} --db=${{ secrets.COSMOS_DB_NAME }} --collection=${{ secrets.COSMOS_COLLECTION1_NAME }} --file=./sample_data/sampleAds.json --jsonArray
-
+          mongoimport --uri="${{ needs.DeployInfra.outputs.cosmos_db_connection_string }}" --db="${{ secrets.COSMOS_DB_NAME }}" --collection="${{ secrets.COSMOS_COLLECTION1_NAME }}" --file=./sample_data/sampleAds.json --jsonArray
