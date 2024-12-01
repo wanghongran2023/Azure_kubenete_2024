@@ -57,7 +57,8 @@ jobs:
           terraform apply -auto-approve -var-file=variables.tfvars
           
           # Extract the raw Cosmos DB connection string
-          cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
+          #cosmos_cs=$(terraform output -raw cosmos_db_connection_string)
+          cosmos_cs=$(terraform state show azurerm_cosmosdb_account.cosmos_account | grep primary_connection_string | awk -F '=' '{print $2}' | xargs)
           
           if [ -z "$cosmos_cs" ]; then
             echo "Error: Cosmos DB connection string is empty!"
