@@ -1,0 +1,53 @@
+name: Infra Construction
+
+on:
+  workflow_dispatch:
+
+jobs:
+  DeployInfraAndBuild:
+    name: Deploy Infra and Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Terraform binary
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/terraform
+          key: terraform-cache-${{ runner.os }}-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            terraform-cache-${{ runner.os }}-
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+     
+      - name: Update Terraform Setup
+        working-directory: Terraform 
+        run: |
+           sed -i "s|{tmp_subscription_id}|${{ secrets.SUBSCRIPTION_ID }}|g" variables.tfvars
+           sed -i "s|{tmp_tenant_id}|${{ secrets.TENANT_ID }}|g" variables.tfvars
+           sed -i "s|{tmp_sp_client_id}|${{ secrets.SP_CLIENT_ID }}|g" variables.tfvars
+           sed -i "s|{tmp_sp_client_secret}|${{ secrets.SP_CLIENT_SECRET }}|g" variables.tfvars
+
+           sed -i "s|{tmp_resource_group_name}|${{ secrets.RESOURCE_GROUP_NAME }}|g" variables.tfvars
+           sed -i "s|{tmp_resource_group_location}|${{ secrets.RESOURCE_GROUP_LOCATION }}|g" variables.tfvars
+
+           sed -i "s|{tmp_storage_account_name}|${{ secrets.STORAGE_ACCOUNT }}|g" variables.tfvars
+
+           sed -i "s|{tmp_function_name}|${{ secrets.FUNCTION_NAME }}|g" variables.tfvars
+
+           sed -i "s|{tmp_cosmos_name}|${{ secrets.COSMOS_NAME }}|g" variables.tfvars
+           sed -i "s|{tmp_cosmos_db_name}|${{ secrets.COSMOS_DB_NAME }}|g" variables.tfvars
+           sed -i "s|{tmp_cosmos_collection1_name}|${{ secrets.COSMOS_COLLECTION1_NAME }}|g" variables.tfvars
+           sed -i "s|{tmp_cosmos_collection2_name}|${{ secrets.COSMOS_COLLECTION2_NAME }}|g" variables.tfvars
+
+      - name: Start Terraform Deploy
+        working-directory: Terraform
+        run: |
+          terraform init
+          terraform plan -var-file=variables.tfvars
+          terraform apply -auto-approve -var-file=variables.tfvars
+
