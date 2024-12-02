@@ -275,3 +275,4 @@ jobs:
           sed -i "s|{tmp_acr_name}|${{ secrets.ACR_NAME }}|g" deployment.yaml
           #kubectl set image deployment/azure-function azure-function=$REGISTRY/$IMAGE_NAME:${{ github.sha }} --namespace <namespace> || \
           kubectl apply -f ./deployment.yaml
+          kubectl apply -f ./service.yaml
