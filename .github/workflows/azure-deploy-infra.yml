@@ -291,4 +291,62 @@ jobs:
       - name: Update Parameter in APP Config
         working-directory: NeighborlyFrontEnd 
         run: |
-          sed -i "s|{tmp_mongodb_connection}|$ESCAPED_COSMOS_DB_CONNECTION_STRING|g" ./createAdvertisement/__init__.py
+          ESCAPED_API_URL=$(echo "https://${{ secrets.FUNCTION_NAME }}.azurewebsites.net/api/" | sed 's/[&/]/\\&/g')
+          sed -i "s|{tmp_api_url}|$ESCAPED_API_URL|g" ./settings.py
+
+      - name: Set up Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
+
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-app
+          path: |
+            release.zip
+            !venv/
+
+  DeployFrontEndFunc:
+    name: Deploy Frontend App With Function APP 
+    needs: BuildFrontEndFunc
+    runs-on: ubuntu-latest
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.SP_CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: ${{ secrets.APP_NAME }}
+          slot-name: 'Production'
