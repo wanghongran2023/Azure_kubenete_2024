@@ -291,13 +291,13 @@ jobs:
             echo "Waiting for External IP..."
             sleep 10
           done
-          echo "$EXTERNAL_IP" > ../eks_service_ip.txt
+          echo "$EXTERNAL_IP" > ../aks_service_ip.txt
         
       - name: Upload EKS Service IP as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eks-service-ip
-          path: eks_service_ip.sh
+          name: aks-service-ip
+          path: aks_service_ip.txt
 
 
   BuildFrontEndFunc:
@@ -371,5 +371,85 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: ${{ secrets.APP_NAME }}
+          app-name: ${{ secrets.APP_NAME_FUNC }}
+          slot-name: 'Production'
+
+  BuildFrontEndAKS:
+    name: Build Frontend App With AKS 
+    needs: DeployToAks
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: aks-service-ip
+
+      - name: Update Parameter in APP Config
+        working-directory: NeighborlyFrontEnd 
+        run: |
+          AKS_SERVICE_IP=$(cat aks_service_ip.txt)
+          ESCAPED_API_URL=$(echo "http://$AKS_SERVICE_IP/api/" | sed 's/[&/]/\\&/g')
+          sed -i "s|{tmp_api_url}|$ESCAPED_API_URL|g" ./settings.py
+
+      - name: Set up Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+      
+      - name: Install dependencies
+        working-directory: NeighborlyFrontEnd 
+        run: pip install -r requirements.txt
+        
+      - name: Zip artifact for deployment
+        working-directory: NeighborlyFrontEnd 
+        run: zip release.zip ./* -r
+
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-app-aks
+          path: |
+            ./NeighborlyFrontEnd/release.zip
+            !venv/
+
+  DeployFrontEndAKS:
+    name: Deploy Frontend App With AKS
+    needs: BuildFrontEndAKS
+    runs-on: ubuntu-latest
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp-aks.outputs.webapp-url }}
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-app-aks
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.SP_CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp-aks
+        with:
+          app-name: ${{ secrets.APP_NAME_AKS }}
           slot-name: 'Production'
