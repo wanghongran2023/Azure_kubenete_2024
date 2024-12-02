@@ -24,3 +24,11 @@ cosmos_config={
     collection1_name ="{tmp_cosmos_collection1_name}"
     collection2_name ="{tmp_cosmos_collection2_name}"
 }
+
+acr_config={
+    name             ="{tmp_function_name}"
+}
+
+aks_config={
+    name             ="{tmp_function_name}"
+}
