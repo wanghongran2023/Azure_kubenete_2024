@@ -125,7 +125,11 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled       = true
 }
 
-# Create AKS Cluster
+output "acr_login_server" {
+  value = azurerm_container_registry.acr.login_server
+  sensitive = true
+}
+
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.aks_config.name
   location            = azurerm_resource_group.resource_group.location
