@@ -280,7 +280,7 @@ jobs:
           kubectl apply -f ./service.yaml
 
   BuildFrontEndFunc:
-    name: Build Frontend App
+    name: Build Frontend App With Function APP 
     needs: DeployInfra
     runs-on: ubuntu-latest
     permissions: write-all
@@ -288,5 +288,7 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v4
 
-      - name: Code Checkout
-        working-directory: Terraform 
+      - name: Update Parameter in APP Config
+        working-directory: NeighborlyFrontEnd 
+        run: |
+          sed -i "s|{tmp_mongodb_connection}|$ESCAPED_COSMOS_DB_CONNECTION_STRING|g" ./createAdvertisement/__init__.py
