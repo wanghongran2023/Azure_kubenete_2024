@@ -26,9 +26,9 @@ cosmos_config={
 }
 
 acr_config={
-    name             ="{tmp_function_name}"
+    name             ="{tmp_acr_name}"
 }
 
 aks_config={
-    name             ="{tmp_function_name}"
+    name             ="{tmp_aks_name}"
 }
