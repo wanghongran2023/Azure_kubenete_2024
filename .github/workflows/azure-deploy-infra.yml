@@ -183,7 +183,7 @@ jobs:
       - name: Build and Upload Docker Image for Deploy
         working-directory: NeighborlyAPI 
         run: |
-          ACR_REGISTRY=$(cat acr_login_server.txt)
+          ACR_REGISTRY=$(cat ../acr_login_server.txt)
           az acr login --name ${{ secrets.ACR_NAME }}
           docker build -t $ACR_REGISTRY/azure-function:latest .
           docker push $ACR_REGISTRY/azure-function:latest
