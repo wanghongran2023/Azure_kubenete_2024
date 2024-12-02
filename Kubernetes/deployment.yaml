@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-function
+  labels:
+    app: azure-function
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-function
+  template:
+    metadata:
+      labels:
+        app: azure-function
+    spec:
+      containers:
+      - name: azure-function
+        image: {tmp_acr_name}.azurecr.io/azure-function:latest
+        ports:
+        - containerPort: 80
+
