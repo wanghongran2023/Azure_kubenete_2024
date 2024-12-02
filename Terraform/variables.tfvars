@@ -34,5 +34,6 @@ aks_config={
 }
 
 app_config={
-    name             ="{tmp_app_name}"
+    name_func        ="{tmp_app_name_func}"
+    name_aks         ="{tmp_app_name_aks}"
 }
