@@ -291,7 +291,7 @@ jobs:
             echo "Waiting for External IP..."
             sleep 10
           done
-          echo "$EXTERNAL_IP" > ../aks_service_ip.txt
+          echo "$EXTERNAL_IP" > aks_service_ip.txt
         
       - name: Upload EKS Service IP as artifact
         uses: actions/upload-artifact@v4
