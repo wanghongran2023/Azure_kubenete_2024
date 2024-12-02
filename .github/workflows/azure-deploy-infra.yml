@@ -305,9 +305,11 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
+        working-directory: NeighborlyFrontEnd 
         run: pip install -r requirements.txt
         
       - name: Zip artifact for deployment
+        working-directory: NeighborlyFrontEnd 
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment jobs
@@ -315,7 +317,7 @@ jobs:
         with:
           name: frontend-app
           path: |
-            release.zip
+            ./NeighborlyFrontEnd/release.zip
             !venv/
 
   DeployFrontEndFunc:
