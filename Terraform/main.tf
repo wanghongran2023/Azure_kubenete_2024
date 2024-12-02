@@ -167,7 +167,32 @@ resource "azurerm_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_linux_web_app" "linux_webapp" {
-  name                = var.app_config.name
+  name                = var.app_config.name_func
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
+
+  auth_settings {
+    enabled = false
+  }
+  
+  site_config {
+    always_on        = true
+    #app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && python application.py"
+
+    app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && gunicorn --bind 0.0.0.0:8000 --workers 3 app:app"
+    application_stack {
+      python_version = "3.9"
+    }
+  }
+
+  app_settings = { 
+  }
+}
+
+
+resource "azurerm_linux_web_app" "linux_webapp2" {
+  name                = var.app_config.name_aks
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
   service_plan_id     = azurerm_service_plan.app_service_plan.id
