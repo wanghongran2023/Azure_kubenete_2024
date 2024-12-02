@@ -32,3 +32,7 @@ acr_config={
 aks_config={
     name             ="{tmp_aks_name}"
 }
+
+app_config={
+    name             ="{tmp_app_name}"
+}
