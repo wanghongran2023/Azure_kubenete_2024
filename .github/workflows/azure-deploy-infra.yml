@@ -184,8 +184,8 @@ jobs:
         run: |
           ACR_REGISTRY=$(cat acr_login_server.txt)
           az acr login --name ${{ secrets.ACR_NAME }}
-          docker build -t $ACR_REGISTRY/test:${{ github.sha }} .
-          docker push $ACR_REGISTRY/test:${{ github.sha }}
+          docker build -t $ACR_REGISTRY/azure-function:latest .
+          docker push $ACR_REGISTRY/azure-function:latest
 
       - name: Build Func Packages for Deploy 
         run: |
