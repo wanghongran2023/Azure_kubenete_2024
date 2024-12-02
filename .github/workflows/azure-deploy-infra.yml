@@ -278,3 +278,15 @@ jobs:
           #kubectl set image deployment/azure-function azure-function=$REGISTRY/$IMAGE_NAME:${{ github.sha }} --namespace <namespace> || \
           kubectl apply -f ./deployment.yaml
           kubectl apply -f ./service.yaml
+
+  BuildFrontEndFunc:
+    name: Build Frontend App
+    needs: DeployInfra
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Code Checkout
+        working-directory: Terraform 
