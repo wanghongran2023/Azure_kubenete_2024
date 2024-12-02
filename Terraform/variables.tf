@@ -49,6 +49,7 @@ variable "aks_config" {
 
 variable "app_config" {
   type = object({
-    name             = string
+    name_func             = string
+    name_aks             = string
   })
 }
