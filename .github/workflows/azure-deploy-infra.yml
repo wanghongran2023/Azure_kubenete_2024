@@ -153,20 +153,18 @@ jobs:
           python-version: 3.9
 
       - name: Create and start virtual environment
-        working-directory: NeighborlyAPI
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-          zip release.zip ./* -r
+          pushd './NeighborlyAPI'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          zip -r ../release.zip ./*
+          popd
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            ./NeighborlyAPI/release.zip
-            !venv/
+          path: './release.zip'
             
   DeployFunctionApp:
     runs-on: ubuntu-latest
