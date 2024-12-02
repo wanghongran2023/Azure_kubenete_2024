@@ -156,7 +156,13 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Create and start virtual environment
+      - name: Build Docker Image for Deploy 
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+          docker build -t $REGISTRY/test:${{ github.sha }} .
+          docker push $REGISTRY/test:${{ github.sha }}
+
+      - name: Build Func Packages for Deploy 
         run: |
           pushd './NeighborlyAPI'
           python -m pip install --upgrade pip
