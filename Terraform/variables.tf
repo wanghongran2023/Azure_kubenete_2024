@@ -46,3 +46,9 @@ variable "aks_config" {
     name             = string
   })
 }
+
+variable "app_config" {
+  type = object({
+    name             = string
+  })
+}
