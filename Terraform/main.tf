@@ -157,3 +157,35 @@ resource "azurerm_role_assignment" "aks_acr_permission" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
 }
+
+resource "azurerm_service_plan" "app_service_plan" {
+  name                = "python-app-service-plan"
+  location            = azurerm_resource_group.cms.location
+  resource_group_name = azurerm_resource_group.cms.name
+  sku_name            = "P0v3"
+  os_type             = "Linux"
+}
+
+resource "azurerm_linux_web_app" "linux_webapp" {
+  name                = var.app_config.name
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
+
+  auth_settings {
+    enabled = false
+  }
+  
+  site_config {
+    always_on        = true
+    #app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && python application.py"
+
+    #app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && gunicorn --bind 0.0.0.0:8000 --workers 3 FlaskWebProject:app"
+    application_stack {
+      python_version = "3.9"
+    }
+  }
+
+  app_settings = { 
+  }
+}
