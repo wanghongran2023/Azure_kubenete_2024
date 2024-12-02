@@ -391,7 +391,7 @@ jobs:
       - name: Update Parameter in APP Config
         working-directory: NeighborlyFrontEnd 
         run: |
-          AKS_SERVICE_IP=$(cat aks_service_ip.txt)
+          AKS_SERVICE_IP=$(cat ../aks_service_ip.txt)
           ESCAPED_API_URL=$(echo "http://$AKS_SERVICE_IP/api/" | sed 's/[&/]/\\&/g')
           sed -i "s|{tmp_api_url}|$ESCAPED_API_URL|g" ./settings.py
 
