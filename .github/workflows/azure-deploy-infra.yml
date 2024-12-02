@@ -48,6 +48,9 @@ jobs:
            sed -i "s|{tmp_cosmos_db_name}|${{ secrets.COSMOS_DB_NAME }}|g" variables.tfvars
            sed -i "s|{tmp_cosmos_collection1_name}|${{ secrets.COSMOS_COLLECTION1_NAME }}|g" variables.tfvars
            sed -i "s|{tmp_cosmos_collection2_name}|${{ secrets.COSMOS_COLLECTION2_NAME }}|g" variables.tfvars
+           
+           sed -i "s|{tmp_acr_name}|${{ secrets.ACR_NAME }}|g" variables.tfvars
+           sed -i "s|{tmp_aks_name}|${{ secrets.AKS_NAME }}|g" variables.tfvars
 
       - name: Start Terraform Deploy
         working-directory: Terraform
