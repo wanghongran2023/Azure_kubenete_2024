@@ -280,6 +280,26 @@ jobs:
           kubectl apply -f ./deployment.yaml
           kubectl apply -f ./service.yaml
 
+      - name: Get IP of Kubernetes service
+        run: |
+          while true; do
+            EXTERNAL_IP=$(kubectl get service <service-name> -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$EXTERNAL_IP" ]; then
+              echo "External IP is: $EXTERNAL_IP"
+              break
+            fi
+            echo "Waiting for External IP..."
+            sleep 10
+          done
+          echo "$EXTERNAL_IP" > ../eks_service_ip.txt
+        
+      - name: Upload EKS Service IP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eks-service-ip
+          path: eks_service_ip.sh
+
+
   BuildFrontEndFunc:
     name: Build Frontend App With Function APP 
     needs: DeployInfra
