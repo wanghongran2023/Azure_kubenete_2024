@@ -180,7 +180,8 @@ jobs:
             az account show
             az storage -h
           
-      - name: Build and Upload Docker Image for Deploy 
+      - name: Build and Upload Docker Image for Deploy
+        working-directory: NeighborlyAPI 
         run: |
           ACR_REGISTRY=$(cat acr_login_server.txt)
           az acr login --name ${{ secrets.ACR_NAME }}
