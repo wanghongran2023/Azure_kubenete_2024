@@ -51,6 +51,8 @@ jobs:
            
            sed -i "s|{tmp_acr_name}|${{ secrets.ACR_NAME }}|g" variables.tfvars
            sed -i "s|{tmp_aks_name}|${{ secrets.AKS_NAME }}|g" variables.tfvars
+           
+           sed -i "s|{tmp_app_name}|${{ secrets.APP_NAME }}|g" variables.tfvars
 
       - name: Start Terraform Deploy
         working-directory: Terraform
