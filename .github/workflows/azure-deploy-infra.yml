@@ -283,7 +283,7 @@ jobs:
       - name: Get IP of Kubernetes service
         run: |
           while true; do
-            EXTERNAL_IP=$(kubectl get service <service-name> -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            EXTERNAL_IP=$(kubectl get service azure-function-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             if [ -n "$EXTERNAL_IP" ]; then
               echo "External IP is: $EXTERNAL_IP"
               break
