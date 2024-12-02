@@ -180,7 +180,7 @@ resource "azurerm_linux_web_app" "linux_webapp" {
     always_on        = true
     #app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && python application.py"
 
-    app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && pip install -r gunicorn && gunicorn --bind 0.0.0.0:8000 --workers 3 FlaskWebProject:app"
+    app_command_line = "apt-get update && apt-get install -y build-essential g++ && pip install -r requirements.txt && gunicorn --bind 0.0.0.0:8000 --workers 3 FlaskWebProject:app"
     application_stack {
       python_version = "3.9"
     }
