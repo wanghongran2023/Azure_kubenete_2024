@@ -34,3 +34,15 @@ variable "cosmos_config" {
     collection2_name             = string
   })
 }
+
+variable "acr_config" {
+  type = object({
+    name             = string
+  })
+}
+
+variable "aks_config" {
+  type = object({
+    name             = string
+  })
+}
